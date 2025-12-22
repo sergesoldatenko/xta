@@ -1,3 +1,9 @@
+# Property files
+*.properties
+
+# Compiled target files:
+target/*
+
 # Compiled class file
 *.class
 
