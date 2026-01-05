@@ -5,7 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import static com.github.sergesoldatenko.xta.ui.MenuBuilder.createMenuBar;
-import static com.github.sergesoldatenko.xta.createCenter;
+import static com.github.sergesoldatenko.xta.ui.Center.createCenter;
 import javafx.scene.Parent;
 
 /**
