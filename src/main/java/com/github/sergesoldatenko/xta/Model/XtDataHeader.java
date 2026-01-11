@@ -161,7 +161,6 @@ public class XtDataHeader {
                 activePathBytes = new byte[activePathLength];
                 header.position(POSITION_METADATA + metadataLength);
                 header.get(activePathBytes, 0, activePathLength);
-                // to do: parse active path
                 activePath.setElements(activePathBytes);
             }
         }
@@ -208,7 +207,14 @@ public class XtDataHeader {
     public void save() {
         if (origDataChanged()) {
             // to do: update header
+
+            // to do: update active path on header saving
+            activePath.getElements();
         }
+    }
+
+    public DataPath getActivePath() {
+        return activePath;
     }
     
     private boolean origDataChanged() {

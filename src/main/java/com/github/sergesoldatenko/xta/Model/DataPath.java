@@ -38,21 +38,47 @@ public class DataPath {
         return count;
     }
     
-    public ByteBuffer getElements() {
+    public byte[] getElements() {
+        int elementPosition = 0;
+        int length = getLength();
+        byte[] activePathBytes = new byte[Long.BYTES * length];
+        long elementId;
+
         DataPathElement element;
-        ByteBuffer buffer;
-        buffer = ByteBuffer.allocate(getLength() * Long.BYTES);
-        buffer.position(0);
         element = rootElement;
         do {
-            buffer.putLong(element.getId());
+            elementId = element.getId();
+            for (int i = Long.BYTES - 1; i >= 0; i--) {
+                activePathBytes[elementPosition+i] = (byte)(elementId & 0xFF);
+                elementId >>= Byte.SIZE; // Shift right by 8 bits (Byte.SIZE)
+            }
+            elementPosition += Long.BYTES;
             element = element.getChild();
         } while (element != null);
-        
-        return buffer;
+
+        return activePathBytes;
     }
 
     public void setElements(byte[] activePathBytes) {
-        Long.
+        int elementsCount = activePathBytes.length / Long.BYTES;
+        long value;
+        DataPathElement element;
+        DataPathElement parentElement = new DataPathElement();
+
+        for (int level = 1; level < elementsCount+1; level++) {
+            value = 0;
+            for (int i = 0; i < Long.BYTES; i++) {
+                value <<= Byte.SIZE;
+                value |= (activePathBytes[level+i] & 0xFF);
+            }
+            element = new DataPathElement(value);
+            if (level > 1) {
+                element.setParent(parentElement);
+            } else {
+                rootElement = element;
+            }
+
+            parentElement = element;
+        }
     }
 }

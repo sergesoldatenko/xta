@@ -80,6 +80,13 @@ public class XtDataRecord {
         return this.level;
     }
     
+    public void setParent(long id) {
+        parent = id;
+    }
+    public long getParent() {
+        return parent;
+    }
+
     public ByteBuffer toByteBuffer() {
         ByteBuffer record;
         // to do: set correct buffer size and fill it with data

@@ -61,6 +61,7 @@ public class XtData {
     }
     
     public void addDataRecord(XtDataRecord dataRecord) {
+        // to do: update active record
         dataRecords.add(dataRecord);
     }
 
@@ -77,6 +78,18 @@ public class XtData {
     public String getProjectName() {
         return xtDataHeader.getProjectName();
     }
+
+    public DataPath getActivePath() {
+        return xtDataHeader.getActivePath();
+    }
+/*
+    public void setActiveElement(DataPathElement element) {
+        xtDataHeader.setActiveElement(element);
+    }
+    public DataPathElement getActiveElement() {
+        return activePath
+    }
+*/
 
     public void init() {
         xtDataHeader.init();

@@ -4,6 +4,13 @@ public class DataPathElement {
     private long elementId;
     private DataPathElement parent;
     private DataPathElement child;
+
+    DataPathElement(long id) {
+        setId(elementId);
+    }
+
+    DataPathElement() {
+    }
     
     public void setId(long id) {
         elementId = id;

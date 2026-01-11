@@ -51,7 +51,20 @@ public class XtFileParser {
                 xtData.setStatus(STATUS_LOADED);
                 break;
             } else {
-                xtData.addDataRecord(parseLine(line));
+                // to do: set increment id for each record
+                XtDataRecord record = parseLine(line);
+                DataPath activePath = xtData.getActivePath();
+                DataPathElement element = new DataPathElement(record.getIncrementId());
+                if (record.getLevel() > 1) {
+                    DataPathElement parentElement = activePath.getElementByLevel(record.getLevel() - 1);
+                    parentElement.setChild(element);
+                    record.setParent(parentElement.getId());
+                } else { // top level element
+                    activePath.setRootElement(element);
+                }
+                //record.setAsActive();
+
+                xtData.addDataRecord(record);
                 chunkNum++;
             }
         }
@@ -192,7 +205,7 @@ public class XtFileParser {
                     try {
                         lineNum = Integer.parseInt(line.substring(i));
                     } catch (NumberFormatException ex) {
-                        lineNum = 0;
+                        lineNum = -1;
                     }
                     xtDataRecord.setLineNum(lineNum);
             }
