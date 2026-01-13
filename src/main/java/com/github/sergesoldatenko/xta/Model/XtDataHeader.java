@@ -18,6 +18,7 @@ public class XtDataHeader {
     // private int xtRecordLength = 0; - no need for now. Maybe used when added fields length dynamic management.
     private String xtFilename;
     private String projectName;
+    private long activeRecordId;
     private DataPath activePath = new DataPath();
     
     // copy of loaded header data
@@ -27,15 +28,16 @@ public class XtDataHeader {
     // private int orig_xtRecordLength; - no need for now. Maybe used when added fields length dynamic management.
     private String orig_xtFilename;
     private String orig_projectName;
+    private long orig_activeRecordId;
     
-    private final int FIXED_VARIABLES_SIZE = 25;
+    private final int FIXED_VARIABLES_SIZE = 31;
     private final int POSITION_HEADER_LENGTH = 4;
     private final int POSITION_METADATA_LENGTH = 6;
     private final int POSITION_STATUS = 8;
     private final int POSITION_XT_FILE_OFFSET = 9;
     private final int POSITION_XT_RECORDS = 13;
-    private final int POSITION_ACTIVE_PATH_LENGTH = 17;
-    private final int POSITION_METADATA = 19;
+    private final int POSITION_ACTIVE_RECORD = 17;
+    private final int POSITION_METADATA = 25;
     private ByteBuffer header;
     private final RandomAccessFile xtaFile;
 
@@ -155,14 +157,8 @@ public class XtDataHeader {
                 }
             }
 
-            int activePathLength = header.getChar(POSITION_ACTIVE_PATH_LENGTH);
-            byte[] activePathBytes;
-            if (activePathLength > 0) {
-                activePathBytes = new byte[activePathLength];
-                header.position(POSITION_METADATA + metadataLength);
-                header.get(activePathBytes, 0, activePathLength);
-                activePath.setElements(activePathBytes);
-            }
+            activeRecordId = header.getLong(POSITION_ACTIVE_RECORD);
+            orig_activeRecordId = activeRecordId;
         }
     }
 
@@ -191,7 +187,7 @@ public class XtDataHeader {
         header.put(status);
         header.putLong(xtFileOffset);
         header.putLong(xtRecords);
-        header.putChar((char) (activePath.getLength() * Long.BYTES)); // POSITION_ACTIVE_PATH_LENGTH
+        header.putLong(activeRecordId);
         header.put(metadata.getBytes());
         header.position(0);
         
@@ -208,8 +204,8 @@ public class XtDataHeader {
         if (origDataChanged()) {
             // to do: update header
 
-            // to do: update active path on header saving
-            activePath.getElements();
+            // to do: update active path on header saving?
+            //activePath.getElements();
         }
     }
 
