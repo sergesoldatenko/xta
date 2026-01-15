@@ -45,6 +45,7 @@ public class XtFileParser {
         xtFile.seek(xtData.getXtFileOffset());
         int chunkNum = 0;
         //long xtRecordsNum = xtData.getXtRecordsNum();
+        long activeRecordId = xtData.getActiveRecordId();
         while (chunkNum < CHUNK_LENGTH) {
             line = xtFile.readLine();
             if (line == null || line.substring(0, 9).equals("TRACE END")) {
@@ -52,9 +53,11 @@ public class XtFileParser {
                 break;
             } else {
                 // to do: set increment id for each record
+                activeRecordId++;
                 XtDataRecord record = parseLine(line);
+                record.setIncrementId(activeRecordId);
                 DataPath activePath = xtData.getActivePath();
-                DataPathElement element = new DataPathElement(record.getIncrementId());
+                DataPathElement element = new DataPathElement(activeRecordId);
                 if (record.getLevel() > 1) {
                     DataPathElement parentElement = activePath.getElementByLevel(record.getLevel() - 1);
                     parentElement.setChild(element);
@@ -68,7 +71,8 @@ public class XtFileParser {
                 chunkNum++;
             }
         }
-            
+
+        xtData.setActiveRecordId(activeRecordId);
         xtData.setXtFileOffset(
             xtFile.getFilePointer()
         );

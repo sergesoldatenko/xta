@@ -90,6 +90,12 @@ public class XtData {
         return activePath
     }
 */
+    public void setActiveRecordId(long id) {
+        xtDataHeader.setActiveRecordId(id);
+    }
+    public long getActiveRecordId() {
+        return xtDataHeader.getActiveRecordId();
+    }
 
     public void init() {
         xtDataHeader.init();

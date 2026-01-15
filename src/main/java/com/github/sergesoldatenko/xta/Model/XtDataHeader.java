@@ -18,7 +18,7 @@ public class XtDataHeader {
     // private int xtRecordLength = 0; - no need for now. Maybe used when added fields length dynamic management.
     private String xtFilename;
     private String projectName;
-    private long activeRecordId;
+    private long activeRecordId = 0;
     private DataPath activePath = new DataPath();
     
     // copy of loaded header data
@@ -90,6 +90,13 @@ public class XtDataHeader {
 
     public long getXtRecordsNumOrig() {
         return this.orig_xtRecords;
+    }
+
+    public void setActiveRecordId(long id) {
+        activeRecordId = id;
+    }
+    public long getActiveRecordId() {
+        return activeRecordId;
     }
     /*
     public int getRecordLength() {
