@@ -1,8 +1,5 @@
 package com.github.sergesoldatenko.xta.Model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class XtData {
     public static final byte STATUS_EMPTY = 0;
     public static final String STATUS_EMPTY_LABEL = "Empty";
@@ -13,8 +10,7 @@ public class XtData {
     public static final byte STATUS_ERROR = 99;
     public static final String STATUS_ERROR_LABEL = "Error";
 
-    private final XtDataHeader xtDataHeader;
-    private List<XtDataRecord> dataRecords = new ArrayList<>();
+    protected final XtDataHeader xtDataHeader;
     private XtDataHashInstruction xtDataHashInstruction;
     private XtDataHashParams xtDataHashParams;
     private XtDataHashFilename xtDataHashFilename;
@@ -25,16 +21,7 @@ public class XtData {
     
     public void save() {
         // to do:
-        // * save parsed records
-        // * update header data if needed
-        
-        saveRecords();
-        // xtDataHeader.save();
-    }
-    private void saveRecords() {
-        xtDataHeader.getXtRecordsNum();
-        xtDataHeader.getXtRecordsNumOrig();
-        //XtDataRecord.RECORD_LENGTH;
+
     }
 
     public void setStatus(byte status) {
@@ -60,11 +47,6 @@ public class XtData {
         return xtDataHeader.getXtRecordsNum();
     }
     
-    public void addDataRecord(XtDataRecord dataRecord) {
-        // to do: update active record
-        dataRecords.add(dataRecord);
-    }
-
     public void setXtFilename(String xtFilename) {
         xtDataHeader.setXtFilename(xtFilename);
     }

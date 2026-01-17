@@ -87,12 +87,14 @@ public class XtDataRecord {
         return parent;
     }
 
-    public ByteBuffer toByteBuffer() {
-        ByteBuffer record;
-        // to do: set correct buffer size and fill it with data
-        record = ByteBuffer.allocate(4096);
-        record.putFloat(0, execTime);
-        
-        return record;
+    public void toByteBuffer(ByteBuffer buffer) {
+        buffer.putLong(parent);
+        buffer.putInt(memory);
+        buffer.putLong(instructionOffset);
+        buffer.putLong(paramsOffset);
+        buffer.putLong(filepathOffset);
+        buffer.putInt(lineNum);
+        buffer.putShort(level);
+        buffer.putFloat(execTime);
     }
 }

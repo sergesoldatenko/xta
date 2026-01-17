@@ -11,11 +11,11 @@ import java.io.RandomAccessFile;
  * A class caller is responsible to invoke close() method before this object is dereferenced
  */
 public class XtFileParser {
-    private final XtData xtData;
+    private final XtDataPopulate xtData;
     private final RandomAccessFile xtFile;
     private final int CHUNK_LENGTH = 1000;
     
-    XtFileParser(String xtFilename, XtData xtData) throws FileNotFoundException {
+    XtFileParser(String xtFilename, XtDataPopulate xtData) throws FileNotFoundException {
         this.xtFile = new RandomAccessFile(xtFilename, "r");
         this.xtData = xtData;
     }

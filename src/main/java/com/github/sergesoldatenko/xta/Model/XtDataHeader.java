@@ -30,6 +30,7 @@ public class XtDataHeader {
     private String orig_projectName;
     private long orig_activeRecordId;
     
+    private final int HEADER_SIZE = 4096;
     private final int FIXED_VARIABLES_SIZE = 31;
     private final int POSITION_HEADER_LENGTH = 4;
     private final int POSITION_METADATA_LENGTH = 6;
@@ -98,6 +99,10 @@ public class XtDataHeader {
     public long getActiveRecordId() {
         return activeRecordId;
     }
+    public long getActiveRecordIdOrig() {
+        return orig_activeRecordId;
+    }
+
     /*
     public int getRecordLength() {
         return this.xtRecordLength;
@@ -171,15 +176,11 @@ public class XtDataHeader {
 
     private void createXtaHeader() {
         header = generateXtaHeader();
-        
-        FileChannel channel = xtaFile.getChannel();
-        while (header.hasRemaining()) {
-            try {
-                channel.write(header);
-            } catch (IOException ex) {
-                System.getLogger(XtDataHeader.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-                ex.printStackTrace();
-            }
+        try {
+            writeToXtaFile(header);
+        } catch (IOException ex) {
+            System.getLogger(XtDataHeader.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            ex.printStackTrace();
         }
     }
     
@@ -187,7 +188,7 @@ public class XtDataHeader {
         String metadata = getMetadata();
         int headerLength = metadata.length() + FIXED_VARIABLES_SIZE;
         //ByteBuffer header = ByteBuffer.allocate(headerLength);
-        ByteBuffer header = ByteBuffer.allocate(4096);
+        ByteBuffer header = ByteBuffer.allocate(HEADER_SIZE);
         header.put("XTA1".getBytes());
         header.putChar((char)headerLength);
         header.putChar((char)metadata.length());
@@ -199,6 +200,21 @@ public class XtDataHeader {
         header.position(0);
         
         return header;
+    }
+
+    public void writeToXtaFile(ByteBuffer buffer) throws IOException {
+        FileChannel channel = xtaFile.getChannel();
+        while (buffer.hasRemaining()) {
+            channel.write(buffer);
+        }
+    }
+    public void writeToXtaFile(ByteBuffer buffer, long seek) throws IOException {
+        xtaFile.seek(seek);
+        writeToXtaFile(buffer);
+    }
+
+    public int getHeaderSize() {
+        return HEADER_SIZE;
     }
 
     public void init() {

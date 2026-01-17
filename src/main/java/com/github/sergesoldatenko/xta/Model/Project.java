@@ -108,7 +108,7 @@ public class Project implements Runnable {
     
     private XtFileParser getParser() throws FileNotFoundException {
         if (this.xtFileParser == null) {
-            this.xtFileParser = new XtFileParser(xtFilename, getXtData());
+            this.xtFileParser = new XtFileParser(xtFilename, new XtDataPopulate(getXtDataHeader()));
         }
         
         return this.xtFileParser;
