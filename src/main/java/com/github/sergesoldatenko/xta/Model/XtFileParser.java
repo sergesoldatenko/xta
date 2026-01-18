@@ -24,6 +24,7 @@ public class XtFileParser {
         if (xtData.getStatus() != STATUS_EMPTY) {
             return;
         }
+        long totalRecords = 0;
         String line;
         line = xtFile.readLine();
         // to do:
@@ -38,47 +39,52 @@ public class XtFileParser {
             // to do:
             // throw exception to show modal window with notification that format isnot recognized
         }
+
+        while ((line = xtFile.readLine()) != null) {
+            if (line.substring(0, 9).equals("TRACE END")) {
+                break;
+            }
+            totalRecords++;
+        }
+        xtData.setXtRecordsNum(totalRecords);
     }
 
     public void resumeLoading() throws IOException {
         String line;
         xtFile.seek(xtData.getXtFileOffset());
         int chunkNum = 0;
-        //long xtRecordsNum = xtData.getXtRecordsNum();
+        long xtRecordsNum = xtData.getXtRecordsNum();
         long activeRecordId = xtData.getActiveRecordId();
         while (chunkNum < CHUNK_LENGTH) {
             line = xtFile.readLine();
-            if (line == null || line.substring(0, 9).equals("TRACE END")) {
-                xtData.setStatus(STATUS_LOADED);
+            if (line == null) {
                 break;
-            } else {
-                // to do: set increment id for each record
-                activeRecordId++;
-                XtDataRecord record = parseLine(line);
-                record.setIncrementId(activeRecordId);
-                DataPath activePath = xtData.getActivePath();
-                DataPathElement element = new DataPathElement(activeRecordId);
-                if (record.getLevel() > 1) {
-                    DataPathElement parentElement = activePath.getElementByLevel(record.getLevel() - 1);
-                    parentElement.setChild(element);
-                    record.setParent(parentElement.getId());
-                } else { // top level element
-                    activePath.setRootElement(element);
-                }
-                //record.setAsActive();
-
-                xtData.addDataRecord(record);
-                chunkNum++;
             }
+            activeRecordId++;
+            XtDataRecord record = parseLine(line);
+            record.setIncrementId(activeRecordId);
+            DataPath activePath = xtData.getActivePath();
+            DataPathElement element = new DataPathElement(activeRecordId);
+            if (record.getLevel() > 1) {
+                DataPathElement parentElement = activePath.getElementByLevel(record.getLevel() - 1);
+                parentElement.setChild(element);
+                record.setParent(parentElement.getId());
+            } else { // top level element
+                activePath.setRootElement(element);
+            }
+            //record.setAsActive();
+
+            xtData.addDataRecord(record);
+            chunkNum++;
+        }
+
+        if (xtRecordsNum == activeRecordId) {
+            xtData.setStatus(STATUS_LOADED);
         }
 
         xtData.setActiveRecordId(activeRecordId);
         xtData.setXtFileOffset(
             xtFile.getFilePointer()
-        );
-            
-        xtData.setXtRecordsNum(
-            xtData.getXtRecordsNum() + chunkNum
         );
     }
 
