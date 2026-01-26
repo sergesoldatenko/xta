@@ -11,17 +11,18 @@ public class XtDataRecord {
     private long paramsOffset;      // 8 bytes
     private long filepathOffset;    // 8 bytes
     private long parent;            // 8 bytes
-    private long incrementId;
+    private long incrementId;       // 8 bytes
     
-    private final int POSITION_PARENT = 0;
-    private final int POSITION_MEMORY_USED = 8;
-    private final int POSITION_INSTRUCTION_OFFSET = 12;
-    private final int POSITION_PARAMS_OFFSET = 20;
-    private final int POSITION_FILEPATH_OFFSET = 28;
-    private final int POSITION_LINENUM = 36;
-    private final int POSITION_LEVEL = 40;
-    private final int POSITION_EXEC_TIME = 42;
-    public static final int RECORD_LENGTH = 46;
+    private static final int POSITION_INCREMENT_ID = 0;
+    private static final int POSITION_PARENT = POSITION_INCREMENT_ID + Long.BYTES;
+    private static final int POSITION_MEMORY_USED = POSITION_PARENT + Long.BYTES;
+    private static final int POSITION_INSTRUCTION_OFFSET = POSITION_MEMORY_USED + Integer.BYTES;
+    private static final int POSITION_PARAMS_OFFSET = POSITION_INSTRUCTION_OFFSET + Long.BYTES;
+    private static final int POSITION_FILEPATH_OFFSET = POSITION_PARAMS_OFFSET + Long.BYTES;
+    private static final int POSITION_LINENUM = POSITION_FILEPATH_OFFSET + Long.BYTES;
+    private static final int POSITION_LEVEL = POSITION_LINENUM + Integer.BYTES;
+    private static final int POSITION_EXEC_TIME = POSITION_LEVEL + Short.BYTES;
+    public static final int RECORD_LENGTH = POSITION_EXEC_TIME + Float.BYTES;
     
     public void setIncrementId(long num) {
         this.incrementId = num;
@@ -85,16 +86,5 @@ public class XtDataRecord {
     }
     public long getParent() {
         return parent;
-    }
-
-    public void toByteBuffer(ByteBuffer buffer) {
-        buffer.putLong(parent);
-        buffer.putInt(memory);
-        buffer.putLong(instructionOffset);
-        buffer.putLong(paramsOffset);
-        buffer.putLong(filepathOffset);
-        buffer.putInt(lineNum);
-        buffer.putShort(level);
-        buffer.putFloat(execTime);
     }
 }

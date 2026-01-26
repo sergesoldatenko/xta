@@ -35,18 +35,19 @@ public class XtDataPopulate extends XtData {
         int bytesToWrite = (int)(activeRecordId - origActiveRecordId) * XtDataRecord.RECORD_LENGTH;
         ByteBuffer dataToSave;
         dataToSave = ByteBuffer.allocate(bytesToWrite);
+        XtDataRecordRepository recordRepo = new XtDataRecordRepository(xtDataHeader);
         for (XtDataRecord record: dataRecords) {
             long incrementId = record.getIncrementId();
             if (incrementId > origActiveRecordId) {
-                record.toByteBuffer(dataToSave);
+                recordRepo.exportToByteBuffer(record, dataToSave);
             }
         }
 
-        // to do: save data from buffer and clear ArrayList
         long filePosition = origActiveRecordId * XtDataRecord.RECORD_LENGTH
                 + xtDataHeader.getHeaderSize();
         try {
             xtDataHeader.writeToXtaFile(dataToSave, filePosition);
+            // to do: clear ArrayList after save
         } catch (IOException ex) {
             System.getLogger(XtDataPopulate.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
