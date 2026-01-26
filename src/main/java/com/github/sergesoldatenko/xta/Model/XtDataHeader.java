@@ -171,6 +171,7 @@ public class XtDataHeader {
 
             activeRecordId = header.getLong(POSITION_ACTIVE_RECORD);
             orig_activeRecordId = activeRecordId;
+            loadDataPath();
         }
     }
 
@@ -211,6 +212,14 @@ public class XtDataHeader {
     public void writeToXtaFile(ByteBuffer buffer, long seek) throws IOException {
         xtaFile.seek(seek);
         writeToXtaFile(buffer);
+    }
+    public int readFromXtaFile(ByteBuffer buffer) throws IOException {
+        FileChannel channel = xtaFile.getChannel();
+        return channel.read(buffer);
+    }
+    public int readFromXtaFile(ByteBuffer buffer, long seek) throws IOException {
+        xtaFile.seek(seek);
+        return readFromXtaFile(buffer);
     }
 
     public int getHeaderSize() {
@@ -257,5 +266,10 @@ public class XtDataHeader {
             }
         }
         return -1;
+    }
+
+    private void loadDataPath() {
+        DataPathRepository dataPathRepo = new DataPathRepository(this);
+        activePath = dataPathRepo.loadById(activeRecordId);
     }
 }
