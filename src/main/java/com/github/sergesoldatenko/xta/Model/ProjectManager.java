@@ -1,7 +1,8 @@
 package com.github.sergesoldatenko.xta.Model;
 
+import com.github.sergesoldatenko.xta.Model.Resources.HandleInUseException;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 //import java.util.LinkedHashMap;
 //import java.util.Map;
 
@@ -32,12 +33,11 @@ public class ProjectManager {
         projectName = name;
         try {
             projectObj = new Project(xtFile);
-        } catch (IOException ex) {
+        } catch (FileNotFoundException | HandleInUseException ex) {
             // to do:
             // show notification about exception. 
             // Maybe suggest to create a file manually and set permissions. TBD
-            
-            //System.getLogger(ProjectManager.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            System.getLogger(ProjectManager.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             return false;
         }
         thread = new Thread(projectObj);

@@ -1,25 +1,21 @@
 package com.github.sergesoldatenko.xta.Model;
 
+import com.github.sergesoldatenko.xta.Model.Resources.HandleInUseException;
+import com.github.sergesoldatenko.xta.Model.Resources.XtaFile;
 import static com.github.sergesoldatenko.xta.Model.XtData.STATUS_EMPTY;
 import static com.github.sergesoldatenko.xta.Model.XtData.STATUS_LOADING;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 
 public class Project implements Runnable {
     private String projectName;
-    //private volatile boolean closeProject = false;
-    
     private final String xtFilename;
-    //private final RandomAccessFile xtFile;
-    private final RandomAccessFile xtaFile;
     private XtData xtDataModel;
     private XtDataHeader xtDataHeaderModel;
     private XtFileParser xtFileParser;
     
-    Project(File xtFile) throws IOException {
-        //this.xtFile = xtFile;
+    Project(File xtFile) throws FileNotFoundException, HandleInUseException {
         xtFilename = xtFile.getPath();
         int lastDotIndex = xtFilename.lastIndexOf('.');
         String xtaFilename = xtFilename;
@@ -28,13 +24,8 @@ public class Project implements Runnable {
         }
         projectName = xtaFilename;
         xtaFilename += ".xta";
-        this.xtaFile = new RandomAccessFile(xtaFilename, "rw");
-        //this.xtFile = new RandomAccessFile(xtFilename, "r");
-        //FileChannel xtaFileChannel = xtaFile.getChannel();
-        //xtaFile = new File(xtaFileName);
-        //xtaJustCreated = xtaFile.createNewFile();
-        
-        //throw new IOException("Cannot create project file. Check permissions.");
+        XtaFile xtaFile = XtaFile.getInstance();
+        xtaFile.open(xtaFilename);
     }
 
     @Override
@@ -101,7 +92,7 @@ public class Project implements Runnable {
     
     private XtDataHeader getXtDataHeader() {
         if (xtDataHeaderModel == null) {
-            xtDataHeaderModel = new XtDataHeader(xtaFile);
+            xtDataHeaderModel = new XtDataHeader();
         }
         return xtDataHeaderModel;
     }

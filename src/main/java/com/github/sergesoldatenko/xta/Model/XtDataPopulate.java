@@ -1,5 +1,6 @@
 package com.github.sergesoldatenko.xta.Model;
 
+import com.github.sergesoldatenko.xta.Model.Resources.XtaFile;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -26,10 +27,6 @@ public class XtDataPopulate extends XtData {
         // xtDataHeader.save();
     }
     private void saveRecords() {
-        //xtDataHeader.getXtRecordsNum();
-        //xtDataHeader.getXtRecordsNumOrig();
-        //XtDataRecord.RECORD_LENGTH;
-
         long activeRecordId = xtDataHeader.getActiveRecordId();
         long origActiveRecordId = xtDataHeader.getActiveRecordIdOrig();
         int bytesToWrite = (int)(activeRecordId - origActiveRecordId) * XtDataRecord.RECORD_LENGTH;
@@ -45,8 +42,9 @@ public class XtDataPopulate extends XtData {
 
         long filePosition = origActiveRecordId * XtDataRecord.RECORD_LENGTH
                 + xtDataHeader.getHeaderSize();
+        XtaFile xtaFile = XtaFile.getInstance();
         try {
-            xtDataHeader.writeToXtaFile(dataToSave, filePosition);
+            xtaFile.write(dataToSave, filePosition);
             // to do: clear ArrayList after save
         } catch (IOException ex) {
             System.getLogger(XtDataPopulate.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);

@@ -1,5 +1,6 @@
 package com.github.sergesoldatenko.xta.Model;
 
+import com.github.sergesoldatenko.xta.Model.Resources.XtaFile;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -16,10 +17,11 @@ public class XtDataRecordRepository {
         long filePosition = (id - 1) * XtDataRecord.RECORD_LENGTH
             + dataHeader.getHeaderSize();
         ByteBuffer buffer = ByteBuffer.allocate(XtDataRecord.RECORD_LENGTH);
+        XtaFile xtaFile = XtaFile.getInstance();
         try {
-            int bytesFetched = dataHeader.readFromXtaFile(buffer, filePosition);
+            int bytesFetched = xtaFile.read(buffer, filePosition);
             if (bytesFetched != XtDataRecord.RECORD_LENGTH) {
-                throw new IOException("Failed to load a xta record");
+                throw new IOException("Failed to load a xta record id: " + id);
             }
             record = new XtDataRecord();
             importFromByteBuffer(record, buffer);

@@ -1,10 +1,9 @@
 package com.github.sergesoldatenko.xta.Model;
 
+import com.github.sergesoldatenko.xta.Model.Resources.XtaFile;
 import static com.github.sergesoldatenko.xta.Model.XtData.STATUS_EMPTY;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 
 public class XtDataHeader {
@@ -40,11 +39,6 @@ public class XtDataHeader {
     private final int POSITION_ACTIVE_RECORD = 17;
     private final int POSITION_METADATA = 25;
     private ByteBuffer header;
-    private final RandomAccessFile xtaFile;
-
-    public XtDataHeader(RandomAccessFile xtaFile) {
-        this.xtaFile = xtaFile;
-    }
 
     public String getVersion() {
         return xtaVersionSignature;
@@ -117,12 +111,12 @@ public class XtDataHeader {
     }
     
     private void loadXtaHeader() {
+        XtaFile xtaFile = XtaFile.getInstance();
         boolean headerLoaded = false;
         ByteBuffer miniHeader = ByteBuffer.allocate(6);
-        FileChannel channel = xtaFile.getChannel();
         byte[] bytes;
         try {
-            int bytesRead = channel.read(miniHeader);
+            int bytesRead = xtaFile.read(miniHeader);
             if (bytesRead == 6) {
                 bytes = new byte[4];
                 miniHeader.position(0);
@@ -131,8 +125,7 @@ public class XtDataHeader {
                 String xtaSignature = new String(bytes, StandardCharsets.UTF_8);
                 int headerLength = miniHeader.getChar();
                 header = ByteBuffer.allocate(headerLength);
-                channel.position(0);
-                bytesRead = channel.read(header);
+                bytesRead = xtaFile.read(header, 0);
                 if (bytesRead == headerLength) {
                     headerLoaded = true;
                 }
@@ -176,12 +169,12 @@ public class XtDataHeader {
     }
 
     private void createXtaHeader() {
+        XtaFile xtaFile = XtaFile.getInstance();
         header = generateXtaHeader();
         try {
-            writeToXtaFile(header);
+            xtaFile.write(header, 0);
         } catch (IOException ex) {
             System.getLogger(XtDataHeader.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-            ex.printStackTrace();
         }
     }
     
@@ -201,25 +194,6 @@ public class XtDataHeader {
         header.position(0);
         
         return header;
-    }
-
-    public void writeToXtaFile(ByteBuffer buffer) throws IOException {
-        FileChannel channel = xtaFile.getChannel();
-        while (buffer.hasRemaining()) {
-            channel.write(buffer);
-        }
-    }
-    public void writeToXtaFile(ByteBuffer buffer, long seek) throws IOException {
-        xtaFile.seek(seek);
-        writeToXtaFile(buffer);
-    }
-    public int readFromXtaFile(ByteBuffer buffer) throws IOException {
-        FileChannel channel = xtaFile.getChannel();
-        return channel.read(buffer);
-    }
-    public int readFromXtaFile(ByteBuffer buffer, long seek) throws IOException {
-        xtaFile.seek(seek);
-        return readFromXtaFile(buffer);
     }
 
     public int getHeaderSize() {
